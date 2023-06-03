@@ -73,32 +73,31 @@ public class Proyecto3 {
             System.exit(1);
         }
 
-        GenerarArchivo archivo = new GenerarArchivo(renglones, columnas, semilla);
+        GenerarArchivo archivo = new GenerarArchivo(columnas, renglones, semilla);
         archivo.creaArchivo();
     }
 
     /* Metodo auxiliar para leer uin archivo por bytes */
     private static void leerArchivo(){
-        Lista<String> numeros = new Lista<>();
+        Lista<Integer> numeros = new Lista<>();
         try{
-            BufferedReader br =
-            new BufferedReader(
-                new InputStreamReader(System.in));
-                String s;
-                while ((s = br.readLine()) != null){
-                    numeros.agrega(s);
-                }
+            InputStreamReader out = new InputStreamReader(System.in);
+            int n;
+            int c = 0;
+            while ((n = out.read()) != -1){
+                numeros.agrega(n);
+                System.out.println("Elemento agregado: " + n + "\tElemento " + c + " de la lista");
+                c++;
+            }
+            out.close();
         } catch (IOException ioe){
             System.err.println("Ocurrio un error durante la lectura del archivo");
             System.exit(1);
         }
         byte[] archivo = new byte[numeros.getElementos()];
         int c = 0;
-        String s = "";
         for (int n : numeros){
-            archivo[c++] = (byte)(n & 0xFF);
-            s += String.format("%s, ", (n & 0xFF));
+            archivo[c++] = (byte)(n  & 0xFF);
         }
-        System.out.println(s);
     }
 }

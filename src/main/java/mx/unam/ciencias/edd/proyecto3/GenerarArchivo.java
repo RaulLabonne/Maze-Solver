@@ -15,16 +15,17 @@ public class GenerarArchivo {
     public GenerarArchivo(int w, int h, long seed){
         this.laberinto = new Laberinto(w, h, seed);
         this.laberinto.construyeLaberinto();
-        /* System.out.println(laberinto); */
+        /* System.out.println(laberinto);  */
         laberintoBytes = laberinto.arregloCasillas((byte)(w & 0xFF), (byte)(h & 0xFF));
     }
 
     public void creaArchivo(){
         try{
-            OutputStreamWriter out = 
-                new OutputStreamWriter(System.out);
-            for (int i = 0; i < laberintoBytes.length; i++)
+            OutputStreamWriter out = new OutputStreamWriter(System.out);
+            for (int i = 0; i < laberintoBytes.length; i++){
+                /* System.out.println(laberintoBytes[i]); */
                 out.write(laberintoBytes[i]);
+            }
             out.close();
         } catch (IOException ioe){}
     }

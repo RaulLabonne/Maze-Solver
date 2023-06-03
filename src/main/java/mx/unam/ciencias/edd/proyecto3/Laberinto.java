@@ -74,7 +74,7 @@ public class Laberinto {
             if (objeto == null || getClass() != objeto.getClass())
                 return false;
             Casilla casilla = (Casilla)objeto;
-            if (x != casilla.x || y != casilla.y)
+            if (x != casilla.x || y != casilla.y || puerta != casilla.puerta || puntaje != casilla.puntaje)
                 return false;
             return true;
         }
@@ -85,12 +85,12 @@ public class Laberinto {
          * @param y la coordenada en y de la casilla
          */
         public void setTipoCasilla(int x, int y){
-            if (x == 0){
-                if (y == 0){
+            if (y == 0){
+                if (x == 0){
                     tipo = TipoCasilla.ESQUINA_IZQ_N;
                     return;
                 }
-                else if (y != 0 && y != laberinto[x].length - 1){
+                else if (x != 0 && x != laberinto[y].length - 1){
                     tipo = TipoCasilla.LATERAL_NORTE;
                     return;
                 }
@@ -98,12 +98,12 @@ public class Laberinto {
                     tipo = TipoCasilla.ESQUINA_DER_N;
                     return;
                 }
-            } else if (x == laberinto.length - 1){
-                if (y == 0){
+            } else if (y == laberinto.length - 1){
+                if (x == 0){
                     tipo = TipoCasilla.ESQUINA_IZQ_SUR;
                     return;
                 }
-                else if (y != 0 && y != laberinto[x].length - 1){
+                else if (x != 0 && x != laberinto[y].length - 1){
                     tipo = TipoCasilla.LATERAL_SUR;
                     return;
                 }
@@ -111,11 +111,11 @@ public class Laberinto {
                     tipo = TipoCasilla.ESQUINA_DER_SUR;
                     return;
                 }
-            } else if (y == 0){
+            } else if (x == 0){
                 tipo = TipoCasilla.LATERAL_OESTE;
                 return;
             }
-            else if (y == laberinto[x].length - 1){
+            else if (x == laberinto[x].length - 1){
                 tipo = TipoCasilla.LATERAL_ESTE;
                 return;
             }
@@ -140,17 +140,27 @@ public class Laberinto {
      * @param semilla la semilla del laberinto
      */
     public Laberinto(int w, int h, long semilla){
-        laberinto = new Casilla[w][h];
-        for (int i = 0; i < w; i++)
-            for (int j = 0; j < h; j++){
-                laberinto[i][j] = new Casilla(i, j);
-                laberinto[i][j].setTipoCasilla(i, j);
+        laberinto = new Casilla[h][w];
+/*         System.out.println(laberinto.length + " - " + laberinto[0].length); */
+/*         String s = "";
+        int c = 0; */
+        for (int i = 0; i < h; i++){
+            for (int j = 0; j < w; j++){
+/*                 s += String.format("| %s |", c);
+                c ++; */
+                laberinto[i][j] = new Casilla(j, i);
+                laberinto[i][j].setTipoCasilla(j, i); 
             }
+/*             c =0;
+            s += "\n"; */
+        }
+/*         System.out.println(s); */
         random = new Random(semilla);
         entrada = entradaAleatoria();
         salida = salidaAleatoria();
         verificaEntradaYSalida();
     }
+    
     /**
      * Construye un laberinto a partir de un arreglo de bytes
      * @param laberinto el arreglo de bytes de un archivo
@@ -173,6 +183,7 @@ public class Laberinto {
      */
     public void construyeLaberinto(){
         Pila<Casilla> pila = new Pila<>();
+        entrada.anterior = new Casilla(-1, -1);
         pila.mete(entrada);
         while (!pila.esVacia()){
             Casilla actual = pila.mira();
@@ -204,13 +215,18 @@ public class Laberinto {
      */
     public byte[] arregloCasillas(byte renglones, byte columnas){
         byte[] casillas = new byte[(laberinto.length * laberinto[0].length) + 6];
-        casillas[0] = (byte)0x4d; casillas[1] = (byte)0x41; casillas[2] = (byte)0x5a; casillas[3] = (byte)0x45;
-        casillas[4] = renglones; casillas[5] = columnas;
+        casillas[0] = (byte)0x4d; 
+        casillas[1] = (byte)0x41; 
+        casillas[2] = (byte)0x5a; 
+        casillas[3] = (byte)0x45;
+        casillas[4] = renglones; 
+        casillas[5] = columnas;
         int indice = 6;
-        for (int i = 0; i < laberinto[0].length; i++)
-            for (int j = 0; j < laberinto.length; j++){
-                casillas[indice] = laberinto[j][i].construirByte();
+        for (int i = 0; i < laberinto.length; i++){
+            for (int j = 0; j < laberinto[0].length; j++){
+                casillas[indice] = laberinto[i][j].construirByte();
                 indice ++;
+            }
         }
         return casillas;
     }
@@ -222,24 +238,24 @@ public class Laberinto {
     private void abrirPuerta(Casilla casilla){
         if (casilla.x == casilla.anterior.x)
             if(casilla.y - 1 == casilla.anterior.y){
-                casilla.puerta &= 11;
-                casilla.anterior.puerta &= 14;
+                casilla.puerta &= 13;
+                casilla.anterior.puerta &= 7;
                 bordes(casilla);
                 return;
             } else {
-                casilla.puerta &= 14;
-                casilla.anterior.puerta &= 11;
+                casilla.puerta &= 7;
+                casilla.anterior.puerta &= 13;
                 bordes(casilla);
                 return;
             }
         if (casilla.x - 1== casilla.anterior.x){
-            casilla.puerta &= 13;
-            casilla.anterior.puerta &= 7;
+            casilla.puerta &= 11;
+            casilla.anterior.puerta &= 14;
             bordes(casilla);
             return;
         } else {
-            casilla.puerta &= 7;
-            casilla.anterior.puerta &= 13;
+            casilla.puerta &= 14;
+            casilla.anterior.puerta &= 11;
             bordes(casilla);
             return;
         }
@@ -326,66 +342,66 @@ public class Laberinto {
         Casilla vecinoSur, vecinoEste, vecinoOeste, vecinoNorte;
         switch (casilla.tipo){
             case ESQUINA_IZQ_N:
-                vecinoSur = laberinto[casilla.x+1][casilla.y];
-                vecinoEste = laberinto[casilla.x][casilla.y+1];
+                vecinoSur = laberinto[casilla.y+1][casilla.x];
+                vecinoEste = laberinto[casilla.y][casilla.x+1];
                 vecinos.agrega(vecinoSur);
                 vecinos.agrega(vecinoEste);
                 break;
             case LATERAL_NORTE:
-                vecinoOeste = laberinto[casilla.x][casilla.y-1];
-                vecinoSur = laberinto[casilla.x+1][casilla.y];
-                vecinoEste = laberinto[casilla.x][casilla.y+1];
+                vecinoOeste = laberinto[casilla.y][casilla.x-1];
+                vecinoSur = laberinto[casilla.y+1][casilla.x];
+                vecinoEste = laberinto[casilla.y][casilla.x+1];
                 vecinos.agrega(vecinoOeste);
                 vecinos.agrega(vecinoEste);
                 vecinos.agrega(vecinoSur);
                 break;
             case ESQUINA_DER_N:
-                vecinoSur = laberinto[casilla.x+1][casilla.y];
-                vecinoOeste = laberinto[casilla.x][casilla.y-1];
+                vecinoSur = laberinto[casilla.y+1][casilla.x];
+                vecinoOeste = laberinto[casilla.y][casilla.x-1];
                 vecinos.agrega(vecinoSur);
                 vecinos.agrega(vecinoOeste);
                 break;
             case LATERAL_ESTE:
-                vecinoNorte = laberinto[casilla.x-1][casilla.y];
-                vecinoSur = laberinto[casilla.x+1][casilla.y];
-                vecinoOeste = laberinto[casilla.x][casilla.y-1];
+                vecinoNorte = laberinto[casilla.y-1][casilla.x];
+                vecinoSur = laberinto[casilla.y+1][casilla.x];
+                vecinoOeste = laberinto[casilla.y][casilla.x-1];
                 vecinos.agrega(vecinoOeste);
                 vecinos.agrega(vecinoNorte);
                 vecinos.agrega(vecinoSur);
                 break;
             case ESQUINA_DER_SUR:
-                vecinoNorte = laberinto[casilla.x-1][casilla.y];
-                vecinoOeste = laberinto[casilla.x][casilla.y-1];
+                vecinoNorte = laberinto[casilla.y-1][casilla.x];
+                vecinoOeste = laberinto[casilla.y][casilla.x-1];
                 vecinos.agrega(vecinoNorte);
                 vecinos.agrega(vecinoOeste);
                 break;
             case LATERAL_SUR:
-                vecinoOeste = laberinto[casilla.x][casilla.y-1];
-                vecinoNorte = laberinto[casilla.x-1][casilla.y];
-                vecinoEste = laberinto[casilla.x][casilla.y+1];
+                vecinoOeste = laberinto[casilla.y][casilla.x-1];
+                vecinoNorte = laberinto[casilla.y-1][casilla.x];
+                vecinoEste = laberinto[casilla.y][casilla.x+1];
                 vecinos.agrega(vecinoOeste);
                 vecinos.agrega(vecinoEste);
                 vecinos.agrega(vecinoNorte);
                 break;
             case ESQUINA_IZQ_SUR:
-                vecinoNorte = laberinto[casilla.x-1][casilla.y];
-                vecinoEste = laberinto[casilla.x][casilla.y+1];
+                vecinoNorte = laberinto[casilla.y-1][casilla.x];
+                vecinoEste = laberinto[casilla.y][casilla.x+1];
                 vecinos.agrega(vecinoNorte);
                 vecinos.agrega(vecinoEste);
                 break;
             case LATERAL_OESTE:
-                vecinoNorte = laberinto[casilla.x-1][casilla.y];
-                vecinoSur = laberinto[casilla.x+1][casilla.y];
-                vecinoEste = laberinto[casilla.x][casilla.y+1];
+                vecinoNorte = laberinto[casilla.y-1][casilla.x];
+                vecinoSur = laberinto[casilla.y+1][casilla.x];
+                vecinoEste = laberinto[casilla.y][casilla.x+1];
                 vecinos.agrega(vecinoEste);
                 vecinos.agrega(vecinoNorte);
                 vecinos.agrega(vecinoSur);
                 break;
             case CENTRO:
-                vecinoNorte = laberinto[casilla.x-1][casilla.y];
-                vecinoSur = laberinto[casilla.x+1][casilla.y];
-                vecinoEste = laberinto[casilla.x][casilla.y+1];
-                vecinoOeste = laberinto[casilla.x][casilla.y-1];
+                vecinoNorte = laberinto[casilla.y-1][casilla.x];
+                vecinoSur = laberinto[casilla.y+1][casilla.x];
+                vecinoEste = laberinto[casilla.y][casilla.x+1];
+                vecinoOeste = laberinto[casilla.y][casilla.x-1];
                 vecinos.agrega(vecinoEste);
                 vecinos.agrega(vecinoOeste);
                 vecinos.agrega(vecinoNorte);
@@ -439,22 +455,22 @@ public class Laberinto {
         Casilla c = null;
         switch (r){
             case 0:
-                c = laberinto[random.nextInt(laberinto.length-1)][0];
+                c = laberinto[random.nextInt(laberinto.length)][0];
                 c.salida = true;
                 c.puerta = 11;
                 break;
             case 1:
-                c = laberinto[0][random.nextInt(laberinto[0].length-1)];
+                c = laberinto[0][random.nextInt(laberinto[0].length)];
                 c.salida = true;
                 c.puerta = 13;
                 break;
             case 2:
-                c = laberinto[random.nextInt(laberinto.length-1)][laberinto[0].length-1];
+                c = laberinto[random.nextInt(laberinto.length)][laberinto[0].length-1];
                 c.salida = true;
                 c.puerta = 14;
                 break;
             case 3:
-                c = laberinto[laberinto.length-1][random.nextInt(laberinto[0].length-1)];
+                c = laberinto[laberinto.length-1][random.nextInt(laberinto[0].length)];
                 c.salida = true;
                 c.puerta = 7;
                 break;
@@ -472,7 +488,7 @@ public class Laberinto {
         }
     }
 
-/*      @Override public String toString(){
+/*       @Override public String toString(){
         String s = "";
         for (int i = 0; i < laberinto.length; i++){
             for ( int j = 0; j < laberinto[i].length; j++)
@@ -485,7 +501,7 @@ public class Laberinto {
             s += "\n";
         }
         return s;
-    }  */
+    }  */ 
     private Casilla buscaEntrada(){
         return null;
     }
