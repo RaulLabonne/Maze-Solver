@@ -81,7 +81,7 @@ public class Proyecto3 {
     private static void leerArchivo(){
         Lista<Integer> numeros = new Lista<>();
         try{
-            InputStreamReader out = new InputStreamReader(System.in);
+            InputStreamReader out = new InputStreamReader(System.in, "ISO-8859-1");
             int n;
             int c = 0;
             while ((n = out.read()) != -1){
@@ -97,7 +97,8 @@ public class Proyecto3 {
         byte[] archivo = new byte[numeros.getElementos()];
         int c = 0;
         for (int n : numeros){
-            archivo[c++] = (byte)(n  & 0xFF);
+            archivo[c++] = (byte)(n);
         }
+
     }
 }

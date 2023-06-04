@@ -36,9 +36,15 @@ public class Laberinto {
         public Casilla(int x, int y){
             this.x = x;
             this.y = y;
-            puntaje = 16;
+            puntaje = -128; 
+            setPuntaje();
             puerta = 15;
             color = Color.NEGRO;
+        }
+
+        private void setPuntaje(){
+            int r = (random.nextInt(15) + 1);
+            puntaje = (byte) (r << 4);
         }
 
         /* Cosntructor de la clase con un byte */
@@ -50,7 +56,7 @@ public class Laberinto {
             color = Color.ROJO;
         }
 
-        public byte getPuntaje(){
+        public int getPuntaje(){
             return puntaje;
         }
 
@@ -67,7 +73,8 @@ public class Laberinto {
          * @return la casiilla en bytes.
          */
         public byte construirByte(){
-            return (byte)(puerta | puntaje);
+            /* System.out.println("Puerta: " + puerta + "\tPuntaje: " + puntaje+ "\tCasilla: " + (puntaje | puerta));  */
+            return (byte)(puntaje | puerta);
         }
 
         @Override public boolean equals(Object objeto) {
@@ -121,7 +128,6 @@ public class Laberinto {
             }
             tipo = TipoCasilla.CENTRO;
         }
-
     }
 
     /* El laberinto */
@@ -141,25 +147,18 @@ public class Laberinto {
      */
     public Laberinto(int w, int h, long semilla){
         laberinto = new Casilla[h][w];
-/*         System.out.println(laberinto.length + " - " + laberinto[0].length); */
-/*         String s = "";
-        int c = 0; */
+        random = new Random(semilla);
         for (int i = 0; i < h; i++){
             for (int j = 0; j < w; j++){
-/*                 s += String.format("| %s |", c);
-                c ++; */
                 laberinto[i][j] = new Casilla(j, i);
-                laberinto[i][j].setTipoCasilla(j, i); 
+                laberinto[i][j].setTipoCasilla(j, i);
             }
-/*             c =0;
-            s += "\n"; */
         }
-/*         System.out.println(s); */
-        random = new Random(semilla);
         entrada = entradaAleatoria();
         salida = salidaAleatoria();
         verificaEntradaYSalida();
     }
+
     
     /**
      * Construye un laberinto a partir de un arreglo de bytes

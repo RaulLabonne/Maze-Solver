@@ -1,5 +1,5 @@
 package mx.unam.ciencias.edd.proyecto3;
-import java.io.*;
+import java.io.OutputStreamWriter;
 import java.io.IOException;
 
 /** 
@@ -17,17 +17,18 @@ public class GenerarArchivo {
         this.laberinto.construyeLaberinto();
         /* System.out.println(laberinto);  */
         laberintoBytes = laberinto.arregloCasillas((byte)(w & 0xFF), (byte)(h & 0xFF));
+        /* System.out.println(laberintoBytes.length); */
     }
 
     public void creaArchivo(){
         try{
-            OutputStreamWriter out = new OutputStreamWriter(System.out);
+            OutputStreamWriter out = new OutputStreamWriter(System.out, "ISO-8859-1");
             for (int i = 0; i < laberintoBytes.length; i++){
-                /* System.out.println(laberintoBytes[i]); */
-                out.write(laberintoBytes[i]);
+                out.write(laberintoBytes[i] & 0xFF);
             }
             out.close();
-        } catch (IOException ioe){}
+        } catch (IOException ioe){
+            System.err.println("Ocurrio un error al escribir en el archivo");
+        }
     }
-
 }
