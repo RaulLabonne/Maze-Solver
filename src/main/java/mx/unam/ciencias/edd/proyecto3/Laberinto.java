@@ -11,11 +11,11 @@ public class Laberinto {
     /** 
      * Clase interna para generar las casillas.
      * Las propiedades de las casillas se haran en un
-     * numero de 32 bits para despues pasarlos a un byte que 
+     * numero de 8 bits para despues pasarlos a un byte que 
      * represente las caracteristicas de la casilla
      */
-    private class Casilla{
-        /* Valor 16 - 240: El puntaje de la casilla (1-15)*/
+    protected class Casilla{
+        /* Valor -128 - -16: El puntaje de la casilla (1-15)*/
         private byte puntaje;
         /*  Valor 1-15: Las puertas de la casilla */
         private byte puerta;
@@ -36,7 +36,6 @@ public class Laberinto {
         public Casilla(int x, int y){
             this.x = x;
             this.y = y;
-            puntaje = -128; 
             setPuntaje();
             puerta = 15;
             color = Color.NEGRO;
@@ -47,19 +46,28 @@ public class Laberinto {
             puntaje = (byte) (r << 4);
         }
 
-        /* Cosntructor de la clase con un byte */
+        /* Constructor de la clase con un byte */
         public Casilla(byte casilla, int x, int y){
-            puntaje = (byte)((casilla >>> 4) << 4);
-            puerta = (byte)((casilla << 4) >>> 4);
+            puntaje = (byte)(casilla & -16);
+            puerta = (byte)(casilla & 0x0F);
             this.x = x;
             this.y = y;
             color = Color.ROJO;
         }
 
+        /**
+         * Regresa el puntaje de la casilla.
+         * El puntaje de la casilla es de 1 al 15.
+         * @return el puntaje de la casilla
+         */
         public int getPuntaje(){
-            return puntaje;
+            return puntaje >>> 4;
         }
 
+        /**
+         * Regresa en byte las puertas de la casilla
+         * @return las puertas de la casilla
+         */
         public byte getPuerta(){
             return puerta;
         }
@@ -73,7 +81,6 @@ public class Laberinto {
          * @return la casiilla en bytes.
          */
         public byte construirByte(){
-            /* System.out.println("Puerta: " + puerta + "\tPuntaje: " + puntaje+ "\tCasilla: " + (puntaje | puerta));  */
             return (byte)(puntaje | puerta);
         }
 
@@ -165,15 +172,16 @@ public class Laberinto {
      * @param laberinto el arreglo de bytes de un archivo
      */
     public Laberinto(byte[] laberinto){
-        this.laberinto = new Casilla[(int)laberinto[4]][(int)laberinto[5]];
+        this.laberinto = new Casilla[laberinto[4]&0xFF][laberinto[5]&0xFF];
         int b = 6;
         for (int i = 0; i < this.laberinto.length ; i++)
             for (int j = 0; j < this.laberinto[i].length; j++){
-                this.laberinto[j][i] = new Casilla(laberinto[b], j, i);
+                this.laberinto[i][j] = new Casilla(laberinto[b], j, i);
                 b++;
             }
-        entrada = buscaEntrada();
-        salida = buscaSalida();
+        buscaEntrada();
+        buscaSalida();
+        System.out.println("Entrada: " + entrada.x + ", " + entrada.y + "\tSalida: " + salida.x + ", " + salida.y);
     }
 
     /** 
@@ -218,8 +226,8 @@ public class Laberinto {
         casillas[1] = (byte)0x41; 
         casillas[2] = (byte)0x5a; 
         casillas[3] = (byte)0x45;
-        casillas[4] = renglones; 
-        casillas[5] = columnas;
+        casillas[4] = columnas; 
+        casillas[5] = renglones;
         int indice = 6;
         for (int i = 0; i < laberinto.length; i++){
             for (int j = 0; j < laberinto[0].length; j++){
@@ -228,6 +236,25 @@ public class Laberinto {
             }
         }
         return casillas;
+    }
+
+    /**
+     * Regresa la matriz de casillas
+     * @return la matriz de casillas.
+     */
+    public Casilla[][] getLaberinto(){
+        return laberinto;
+    }
+    /**
+     * Obtiene la casilla de coordenadas x,y.
+     * @param x la coordenada x de la casilla
+     * @param y la coordenada y de la casilla
+     * @return la casilla de coordenada x,y.
+     */
+    public Casilla getCasilla(int x, int y){
+        if (y < 0 || y >= laberinto.length || x < 0 || x >= laberinto[0].length)
+            return null;
+        return laberinto[y][x];
     }
 
     /**
@@ -247,7 +274,7 @@ public class Laberinto {
                 bordes(casilla);
                 return;
             }
-        if (casilla.x - 1== casilla.anterior.x){
+        if (casilla.x - 1 == casilla.anterior.x){
             casilla.puerta &= 11;
             casilla.anterior.puerta &= 14;
             bordes(casilla);
@@ -500,12 +527,69 @@ public class Laberinto {
             s += "\n";
         }
         return s;
-    }  */ 
-    private Casilla buscaEntrada(){
-        return null;
+    }  */
+    
+    /**
+     * Metodo que busca a partir del valor de las puertas la entrada
+     * del laberinto
+     * @return la entrada del laberinto.
+     */
+    private void buscaEntrada(){
+        for (int i = 0; i < laberinto.length; i++){
+            if ((laberinto[i][0].puerta & 11) == laberinto[i][0].puerta){
+                entrada = laberinto[i][0];
+                entrada.entrada = true;
+                return;
+            }
+        }
+        System.out.println("Entrada no encontrada;");
+        for (int i = 0; i < laberinto[0].length; i++)
+            if ((laberinto[0][i].puerta & 13) == laberinto[0][i].puerta){
+                entrada = laberinto[0][i];
+                entrada.entrada = true;
+                return;
+            }
+        System.out.println("Entrada no encontrada;");
+        for (int j = 0; j < laberinto.length; j++) 
+            if ((laberinto[j][laberinto[0].length-1].puerta & 14) == laberinto[j][laberinto[0].length-1].puerta){
+                entrada = laberinto[j][laberinto[0].length-1];
+                entrada.entrada = true;
+                return;
+            }
+        System.out.println("Entrada no encontrada;");
+        for (int i = 0; i < laberinto[0].length; i++)
+            if ((laberinto[laberinto.length-1][i].puerta & 7) == laberinto[laberinto.length-1][i].puerta){
+                entrada = laberinto[laberinto.length-1][i];
+                entrada.entrada = true;
+                return;
+            }
+        System.out.println("Entrada no encontrada;");
     }
 
-    private Casilla buscaSalida(){
-        return null;
+    private void buscaSalida(){
+        for (int i = 0; i < laberinto.length; i++)
+            if ((laberinto[i][0].puerta & 11) == laberinto[i][0].puerta && !laberinto[i][0].entrada){
+                salida = laberinto[i][0];
+                salida.salida = true;
+                return;
+            }
+        for (int i = 0; i < laberinto[0].length; i++)
+            if ((laberinto[0][i].puerta & 13) == laberinto[0][i].puerta && !laberinto[0][i].entrada){
+                salida = laberinto[0][1];
+                salida.salida = true;
+                return;
+            }
+        for (int j = 0; j < laberinto.length; j++) 
+            if ((laberinto[j][laberinto[0].length-1].puerta & 14) == laberinto[j][laberinto[0].length-1].puerta && !laberinto[j][laberinto[0].length-1].entrada){
+                salida = laberinto[j][laberinto[0].length-1];
+                salida.salida = true;
+                return;
+            }
+        for (int i = 0; i < laberinto[0].length; i++)
+            if ((laberinto[laberinto.length-1][i].puerta & 7) == laberinto[laberinto.length-1][i].puerta && !laberinto[laberinto.length-1][i].entrada){
+                salida = laberinto[laberinto.length-1][i];
+                salida.salida = true;
+                return;
+            }
     }
 }
