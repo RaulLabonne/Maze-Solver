@@ -16,7 +16,6 @@ public class GenerarArchivo {
     public GenerarArchivo(int w, int h, long seed){
         this.laberinto = new Laberinto(w, h, seed);
         this.laberinto.construyeLaberinto();
-        System.out.println(laberinto);
         laberintoBytes = laberinto.arregloCasillas((byte)(w & 0xFF), (byte)(h & 0xFF));
     }
 

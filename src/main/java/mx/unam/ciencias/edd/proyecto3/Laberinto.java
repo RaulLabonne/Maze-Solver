@@ -287,6 +287,8 @@ public class Laberinto {
             } else
                 pila.saca();
         }
+        puertaEntradaSalida(entrada);
+        puertaEntradaSalida(salida);
     }
 
     /**
@@ -315,6 +317,28 @@ public class Laberinto {
     }
 
 
+    public void puertaEntradaSalida(Casilla casilla){
+        if (casilla.tipo == TipoCasilla.ESQUINA_IZQ_N){
+            casilla.puerta &= 9;
+            bordeEntradaSalida(entrada, 2, 4);
+        } else if (casilla.tipo == TipoCasilla.LATERAL_NORTE)
+            casilla.puerta &= 13;
+        else if (casilla.tipo == TipoCasilla.ESQUINA_DER_N){
+            casilla.puerta &= 12;
+            bordeEntradaSalida(casilla, 2, 1);
+        } else if (casilla.tipo == TipoCasilla.LATERAL_ESTE)
+            casilla.puerta &= 14;
+        else if (casilla.tipo == TipoCasilla.ESQUINA_DER_SUR){
+            casilla.puerta &= 6;
+            bordeEntradaSalida(casilla, 1, 8);
+        } else if (casilla.tipo == TipoCasilla.LATERAL_SUR)
+            casilla.puerta &= 7;
+        else if (casilla.tipo == TipoCasilla.ESQUINA_IZQ_SUR){
+            casilla.puerta &= 3;
+            bordeEntradaSalida(casilla, 8, 4);
+        } else
+            casilla.puerta &= 11;
+    }
     /**
      * Abre la puerta de una casilla con su antesecor;
      * @param casilla la casilla a abrir la puerta
@@ -347,57 +371,34 @@ public class Laberinto {
 
     /**
      * Mantiene los bordes de la casilla si es uno de los extremos
+     * si se llega a abrir.
      * @param casilla la casilla a reponer el borde.
      */
     private void bordes(Casilla casilla){
         switch(casilla.tipo){
             case ESQUINA_IZQ_N:
-                if (casilla.entrada || casilla.salida){
-                    casilla.puerta &= 9;
-                    bordeEntradaSalida(casilla, 2, 4);
-                    break;
-                }
                 casilla.puerta |= 6;
                 break;
             case LATERAL_NORTE: 
-                if(!casilla.entrada || !casilla.salida)
-                    casilla.puerta |= 2;
-                    break;
+                casilla.puerta |= 2;
+                break;
             case ESQUINA_DER_N:
-                if (casilla.entrada || casilla.salida){
-                    casilla.puerta &= 12;
-                    bordeEntradaSalida(casilla, 1, 2);
-                    break;
-                }
                 casilla.puerta |= 3;
                 break;
             case LATERAL_ESTE:
-                if (!casilla.salida || !casilla.entrada)
-                    casilla.puerta |= 1;
+                casilla.puerta |= 1;
                 break;
             case ESQUINA_DER_SUR:
-                if (casilla.entrada || casilla.salida){
-                    casilla.puerta &= 6;
-                    bordeEntradaSalida(casilla, 8, 1);
-                    break;
-                }
                 casilla.puerta |= 9;
                 break;
             case LATERAL_SUR:
-                if(!casilla.entrada || !casilla.salida)
-                    casilla.puerta |= 8;
-                    break;
+                casilla.puerta |= 8;
+                break;
             case ESQUINA_IZQ_SUR:
-                if (casilla.entrada || casilla.salida){
-                    casilla.puerta &= 3;
-                    bordeEntradaSalida(casilla, 8, 4);
-                    break;
-                }
                 casilla.puerta |= 12;
                 break;
             case LATERAL_OESTE:
-                if (!casilla.entrada || !casilla.salida)
-                    casilla.puerta |= 4;
+                casilla.puerta |= 4;
             default:
                 break;
         }
@@ -572,7 +573,7 @@ public class Laberinto {
         }
     }
 
-      @Override public String toString(){
+/*       @Override public String toString(){
         String s = "";
         for (int i = 0; i < laberinto.length; i++){
             for ( int j = 0; j < laberinto[i].length; j++)
@@ -585,7 +586,7 @@ public class Laberinto {
             s += "\n";
         }
         return s;
-    } 
+    }  */
     
     /**
      * Metodo que busca a partir del valor de las puertas la entrada y la salida
