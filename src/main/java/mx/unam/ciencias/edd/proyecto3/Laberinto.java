@@ -543,22 +543,22 @@ public class Laberinto {
         int r = random.nextInt(4);
         Casilla c = null;
         switch (r){
-            case 0:
+            case 2:
                 c = laberinto[random.nextInt(laberinto.length)][0];
                 c.salida = true;
                 c.puerta = 11;
                 break;
-            case 1:
+            case 3:
                 c = laberinto[0][random.nextInt(laberinto[0].length)];
                 c.salida = true;
                 c.puerta = 13;
                 break;
-            case 2:
+            case 0:
                 c = laberinto[random.nextInt(laberinto.length)][laberinto[0].length-1];
                 c.salida = true;
                 c.puerta = 14;
                 break;
-            case 3:
+            case 1:
                 c = laberinto[laberinto.length-1][random.nextInt(laberinto[0].length)];
                 c.salida = true;
                 c.puerta = 7;
