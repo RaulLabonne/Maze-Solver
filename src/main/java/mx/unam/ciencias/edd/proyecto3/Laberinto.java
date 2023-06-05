@@ -73,6 +73,19 @@ public class Laberinto {
             return puerta;
         }
 
+        /**
+         * Cierra una puerta de la casilla.
+         * Este metodo solo se usa en la clase GraficaLaberinto
+         * @param barrera el byte de la puerta
+         */
+        public void cierraPuerta(byte barrera){
+            puerta |= barrera;
+        }
+
+        /**
+         * Reabre la puerta que fue cerrada con el metodo <code>cierraPuerta();</code>
+         * @param puerta la puerta de la casilla antes de ser cerrada.
+         */
         public void recuperaPuerta(byte puerta){
             this.puerta &= puerta;
         }
@@ -86,33 +99,56 @@ public class Laberinto {
             return coordenadas;
         }
 
+        /**
+         * Regresa el color de la casilla.
+         * @return el color de la casilla.
+         */
         public Color getColor(){
             return color;
         }
 
+        /**
+         * Establece el color de la casilla
+         * @param color el nuevo color de la casilla
+         */
         public void setColor(Color color){
             this.color = color;
         }
 
+        /**
+         * Nos dice si la casilla es la entrada
+         * @return <code>true</code> si la casilla es la entrada,
+         *      <code>false</code> en otro caso.
+         */
         public boolean esEntrada(){
             return entrada;
         }
 
+        /**
+         * Nos dice si la casilla es la salida
+         * @return <code>true</code> si la casilla es la salida,
+         *      <code>false</code> en otro caso.
+         */
         public boolean esSalida(){
             return salida;
         }
 
+        /**
+         * Regresa la casilla anterior de la casilla actual
+         * @return la casilla anterior
+         */
         public Casilla getAnterior(){
             return anterior;
         }
 
+        /**
+         * Establece el anterior de la casilla
+         * @param anterior el nuevo anterior de la casilla
+         */
         public void setAnterior(Casilla anterior){
             this.anterior = anterior;
         }
 
-        public void cierraPuerta(byte barrera){
-            puerta |= barrera;
-        }
         /** 
          * Nos regresa en bytes la casilla
          * @return la casiilla en bytes.
@@ -227,7 +263,6 @@ public class Laberinto {
                 b++;
             }
         buscaEntradaYSalida();
-        System.out.println("Entrada: " + entrada.x + ", " + entrada.y + "\tSalida: " + salida.x + ", " + salida.y);
     }
 
     /**
@@ -258,7 +293,7 @@ public class Laberinto {
     }
 
     /**
-     * Regresa ;a salida del laberinto
+     * Regresa la salida del laberinto
      * @return la salida del laberinto.
      */
     public Casilla getSalida(){
@@ -321,6 +356,11 @@ public class Laberinto {
     }
 
 
+    /**
+     * Abre la puerta de la casilla dada.
+     * La casilla siempre sera la entrada o la salida.
+     * @param casilla la casilla a abrir la puerta.
+     */
     public void puertaEntradaSalida(Casilla casilla){
         if (casilla.tipo == TipoCasilla.ESQUINA_IZQ_N){
             casilla.puerta &= 9;
@@ -343,6 +383,7 @@ public class Laberinto {
         } else
             casilla.puerta &= 11;
     }
+    
     /**
      * Abre la puerta de una casilla con su antesecor;
      * @param casilla la casilla a abrir la puerta
