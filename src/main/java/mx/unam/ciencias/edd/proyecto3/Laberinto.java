@@ -73,6 +73,10 @@ public class Laberinto {
             return puerta;
         }
 
+        public void recuperaPuerta(byte puerta){
+            this.puerta &= puerta;
+        }
+
         /**
          * Regresa las coordenadas en un arreglo
          * @return las coordenadas de la casilla
@@ -176,7 +180,7 @@ public class Laberinto {
         }
 
         @Override public String toString(){
-            return "casilla";
+            return String.format("(%s,%s)", x, y);
         }
     }
 
