@@ -4,6 +4,7 @@ import mx.unam.ciencias.edd.Pila;
 import mx.unam.ciencias.edd.proyecto3.Laberinto.Casilla;
 import mx.unam.ciencias.edd.Color;
 import mx.unam.ciencias.edd.Lista;
+import mx.unam.ciencias.edd.VerticeGrafica;
 
 public class GraficaLaberinto {
     
@@ -11,31 +12,34 @@ public class GraficaLaberinto {
     Casilla[][] casillas;
     Laberinto laberinto;
     Grafica<Casilla> lGrafica;
+    Lista<VerticeGrafica<Casilla>> trajectoriaPMinimo;
+    Lista<Casilla> dijkstra;
 
     public GraficaLaberinto(Laberinto laberinto){
         this.laberinto = laberinto;
         casillas = laberinto.getLaberinto();
         lGrafica = new Grafica<>();
+        dijkstra = new Lista<>();
         for (int i = 0; i < this.casillas.length ; i++)
             for (int j = 0; j < this.casillas[i].length; j++)
                 lGrafica.agrega(laberinto.getCasilla(j, i));
         conectaCasillas();
-        System.out.println(lGrafica);
+        trajectoriaPMinimo = lGrafica.dijkstra(laberinto.getEntrada(), laberinto.getSalida());
+        for (VerticeGrafica<Casilla> casilla : trajectoriaPMinimo) {
+            dijkstra.agrega(casilla.get());
+        }
+        System.out.println(dijkstra);
     }
 
     public void conectaCasillas(){
         Pila<Casilla> pila = new Pila<>();
         Casilla entrada = laberinto.getEntrada();
         System.out.println(entrada.getCoordenadas()[0] + ", "+ entrada.getCoordenadas()[1]);
-        /* int c = 0; */
         pila.mete(entrada);
         while (!pila.esVacia()){
             Casilla actual = pila.mira();
-            /* System.out.println("Ciclo " + c + "\nCasilla actual: " + actual.getCoordenadas()[0] + ", "+ actual.getCoordenadas()[1] + "\tColor: " + actual.getColor());
-            c++; */
             actual.setColor(Color.NEGRO);
             Lista<Casilla> puerta = vecinos(actual);
-            /* System.out.println("\tVecinos: " + puerta); */
             if (!puerta.esVacia()){
                 if(puerta.getLongitud() == 1){
                     puerta.getPrimero().setAnterior(actual);;
@@ -57,31 +61,22 @@ public class GraficaLaberinto {
         int[] coor = casilla.getCoordenadas();
         byte entrada = casilla.getPuerta();
         Casilla actual = ignoraPuerta(casilla);
-        /* System.out.println("Puerta de casilla: " + entrada + "\tCasilla parcheada: " + actual.getPuerta()); */
-
-        /* System.out.println("Caso 1: Puerta " + (actual.getPuerta() & 4)); */
         if ((actual.getPuerta() & 11) == actual.getPuerta())
             vecinos.agrega(laberinto.getCasilla(coor[0]-1, coor[1]));
-        /* System.out.println("Caso 2: Puerta " + (actual.getPuerta() & 2)); */
         if ((actual.getPuerta() & 13) == actual.getPuerta())
             vecinos.agrega(laberinto.getCasilla(coor[0], coor[1]-1));
-        /* System.out.println("Caso 3: Puerta " + (actual.getPuerta() & 1)); */
         if ((actual.getPuerta() & 14) == actual.getPuerta())
             vecinos.agrega(laberinto.getCasilla(coor[0]+1, coor[1]));
-        /* System.out.println("Caso 4: Puerta " + (actual.getPuerta() & 8)); */
             if ((actual.getPuerta() & 7) == casilla.getPuerta())
             vecinos.agrega(laberinto.getCasilla(coor[0], coor[1]+1));
-       /*  System.out.println("\tVecinos (sin eliminar): " + vecinos); */
         for (Casilla vecino : vecinos)
             if (vecino.getColor() == Color.NEGRO)
                 vecinos.elimina(vecino);
         casilla.recuperaPuerta(entrada);
-        /* System.out.println(casilla.getPuerta()); */
         return vecinos;
     }
 
     private Casilla ignoraPuerta(Casilla casilla){
-        /* System.out.println("Es entrada: " + casilla.esEntrada() + "\tEs salida: " + casilla.esSalida()); */
         if (casilla.esEntrada() || casilla.esSalida()){
             Casilla conPuerta = casilla;
             int[] coor = conPuerta.getCoordenadas();
@@ -124,5 +119,4 @@ public class GraficaLaberinto {
         System.err.println(s);
         System.exit(1);
     }
-    /* lGrafica.conecta(casilla, vecino, peso + vecino.getPuntaje()); */
 }
