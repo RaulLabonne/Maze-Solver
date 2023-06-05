@@ -96,7 +96,7 @@ public class Proyecto3 {
         for (int n : numeros){
             archivo[c++] = (byte)(n);
         }
-        Laberinto lbByte = new Laberinto(archivo);
-        GraficaLaberinto grafica = new GraficaLaberinto(lbByte);
+        GeneradorSVG svg = new GeneradorSVG(archivo);
+        svg.ejecuta();
     }
 }

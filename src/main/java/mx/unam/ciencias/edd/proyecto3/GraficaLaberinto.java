@@ -28,13 +28,19 @@ public class GraficaLaberinto {
         for (VerticeGrafica<Casilla> casilla : trajectoriaPMinimo) {
             dijkstra.agrega(casilla.get());
         }
-        System.out.println(dijkstra);
+    }
+
+    public Lista<Casilla> getTrayectoria(){
+        return dijkstra;
+    }
+
+    public Grafica<Casilla> getGrafica(){
+        return lGrafica;
     }
 
     public void conectaCasillas(){
         Pila<Casilla> pila = new Pila<>();
         Casilla entrada = laberinto.getEntrada();
-        System.out.println(entrada.getCoordenadas()[0] + ", "+ entrada.getCoordenadas()[1]);
         pila.mete(entrada);
         while (!pila.esVacia()){
             Casilla actual = pila.mira();

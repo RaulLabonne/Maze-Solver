@@ -272,6 +272,11 @@ public class Laberinto {
     public Casilla[][] getLaberinto(){
         return laberinto;
     }
+
+    public int[] getDimensiones(){
+        int [] dimensiones = {laberinto.length, laberinto[0].length};
+        return dimensiones;
+    }
     /**
      * Obtiene la casilla de coordenadas x,y.
      * @param x la coordenada x de la casilla
@@ -383,7 +388,7 @@ public class Laberinto {
         } else
             casilla.puerta &= 11;
     }
-    
+
     /**
      * Abre la puerta de una casilla con su antesecor;
      * @param casilla la casilla a abrir la puerta
