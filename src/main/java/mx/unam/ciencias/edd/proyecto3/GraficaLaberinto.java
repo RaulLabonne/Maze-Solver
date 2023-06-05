@@ -26,11 +26,16 @@ public class GraficaLaberinto {
     public void conectaCasillas(){
         Pila<Casilla> pila = new Pila<>();
         Casilla entrada = laberinto.getEntrada();
+        System.out.println(entrada.getCoordenadas()[0] + ", "+ entrada.getCoordenadas()[1]);
+        /* int c = 0; */
         pila.mete(entrada);
         while (!pila.esVacia()){
             Casilla actual = pila.mira();
+            /* System.out.println("Ciclo " + c + "\nCasilla actual: " + actual.getCoordenadas()[0] + ", "+ actual.getCoordenadas()[1] + "\tColor: " + actual.getColor());
+            c++; */
             actual.setColor(Color.NEGRO);
             Lista<Casilla> puerta = vecinos(actual);
+            /* System.out.println("\tVecinos: " + puerta); */
             if (!puerta.esVacia()){
                 if(puerta.getLongitud() == 1){
                     puerta.getPrimero().setAnterior(actual);;
@@ -50,35 +55,47 @@ public class GraficaLaberinto {
     private Lista<Casilla> vecinos(Casilla casilla){
         Lista<Casilla> vecinos = new Lista<>();
         int[] coor = casilla.getCoordenadas();
+        byte entrada = casilla.getPuerta();
         Casilla actual = ignoraPuerta(casilla);
-        if ((actual.getPuerta() & 4) == actual.getPuerta())
+        /* System.out.println("Puerta de casilla: " + entrada + "\tCasilla parcheada: " + actual.getPuerta()); */
+
+        /* System.out.println("Caso 1: Puerta " + (actual.getPuerta() & 4)); */
+        if ((actual.getPuerta() & 11) == actual.getPuerta())
             vecinos.agrega(laberinto.getCasilla(coor[0]-1, coor[1]));
-        if ((actual.getPuerta() & 2) == actual.getPuerta())
+        /* System.out.println("Caso 2: Puerta " + (actual.getPuerta() & 2)); */
+        if ((actual.getPuerta() & 13) == actual.getPuerta())
             vecinos.agrega(laberinto.getCasilla(coor[0], coor[1]-1));
-        if ((actual.getPuerta() & 1) == actual.getPuerta())
+        /* System.out.println("Caso 3: Puerta " + (actual.getPuerta() & 1)); */
+        if ((actual.getPuerta() & 14) == actual.getPuerta())
             vecinos.agrega(laberinto.getCasilla(coor[0]+1, coor[1]));
-        if ((actual.getPuerta() & 8) == casilla.getPuerta())
+        /* System.out.println("Caso 4: Puerta " + (actual.getPuerta() & 8)); */
+            if ((actual.getPuerta() & 7) == casilla.getPuerta())
             vecinos.agrega(laberinto.getCasilla(coor[0], coor[1]+1));
+       /*  System.out.println("\tVecinos (sin eliminar): " + vecinos); */
         for (Casilla vecino : vecinos)
             if (vecino.getColor() == Color.NEGRO)
                 vecinos.elimina(vecino);
+        casilla.recuperaPuerta(entrada);
+        /* System.out.println(casilla.getPuerta()); */
         return vecinos;
     }
 
     private Casilla ignoraPuerta(Casilla casilla){
-        if (!casilla.esEntrada() || !casilla.esSalida())
-            return casilla;
-        Casilla conPuerta = casilla;
-        int[] coor = conPuerta.getCoordenadas();
-        if (coor[0] == 0)
+        /* System.out.println("Es entrada: " + casilla.esEntrada() + "\tEs salida: " + casilla.esSalida()); */
+        if (casilla.esEntrada() || casilla.esSalida()){
+            Casilla conPuerta = casilla;
+            int[] coor = conPuerta.getCoordenadas();
+            if (coor[0] == 0)
             conPuerta.cierraPuerta((byte)4);
-        if (coor[0] == casillas[0].length-1)
-            conPuerta.cierraPuerta((byte)2);
-        if (coor[1] == 0)
-            conPuerta.cierraPuerta((byte)2);
-        if (coor[1] == casillas.length-1)
-            conPuerta.cierraPuerta((byte)8);
-        return conPuerta;
+            if (coor[0] == casillas[0].length-1)
+                conPuerta.cierraPuerta((byte)1);
+            if (coor[1] == 0)
+                conPuerta.cierraPuerta((byte)2);
+            if (coor[1] == casillas.length-1)
+                conPuerta.cierraPuerta((byte)8);
+            return conPuerta;
+        }
+        return casilla;
     }
 
     private void nuevaArista(Casilla actual){
@@ -86,16 +103,16 @@ public class GraficaLaberinto {
         int[] coor = actual.getCoordenadas(), bcoor = anterior.getCoordenadas();
         int peso = actual.getPuntaje() + anterior.getPuntaje() + 1;
         if (coor[0] == bcoor[0]){
-            if ((actual.getPuerta() & 13) == actual.getPuerta() && (anterior.getPuerta() & 7) == actual.getPuerta())
+            if ((actual.getPuerta() & 13) == actual.getPuerta() && (anterior.getPuerta() & 7) == anterior.getPuerta())
                 lGrafica.conecta(actual, anterior, peso);
-            else if ((actual.getPuerta() & 7) == actual.getPuerta() && (anterior.getPuerta() & 13) == actual.getPuerta())
+            else if ((actual.getPuerta() & 7) == actual.getPuerta() && (anterior.getPuerta() & 13) == anterior.getPuerta())
                 lGrafica.conecta(actual, anterior, peso);
             else 
                 uso(coor, bcoor);
         } else if (coor[1] == bcoor[1]){
-            if ((actual.getPuerta() & 11) == actual.getPuerta() && (anterior.getPuerta() & 14) == actual.getPuerta())
+            if ((actual.getPuerta() & 11) == actual.getPuerta() && (anterior.getPuerta() & 14) == anterior.getPuerta())
                 lGrafica.conecta(actual, anterior, peso);
-            else if ((actual.getPuerta() & 14) == actual.getPuerta() && (anterior.getPuerta() & 11) == actual.getPuerta())
+            else if ((actual.getPuerta() & 14) == actual.getPuerta() && (anterior.getPuerta() & 11) == anterior.getPuerta())
                 lGrafica.conecta(actual, anterior, peso);
             else 
                 uso(coor, bcoor);
