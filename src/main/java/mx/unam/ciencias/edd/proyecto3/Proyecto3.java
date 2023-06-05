@@ -83,11 +83,8 @@ public class Proyecto3 {
         try{
             InputStreamReader out = new InputStreamReader(System.in, "ISO-8859-1");
             int n;
-            int c = 0;
             while ((n = out.read()) != -1){
                 numeros.agrega(n);
-                System.out.println("Elemento agregado: " + n + "\tElemento " + c + " de la lista");
-                c++;
             }
             out.close();
         } catch (IOException ioe){
@@ -99,6 +96,7 @@ public class Proyecto3 {
         for (int n : numeros){
             archivo[c++] = (byte)(n);
         }
-
+        Laberinto lbByte = new Laberinto(archivo);
+        GraficaLaberinto grafica = new GraficaLaberinto(lbByte);
     }
 }

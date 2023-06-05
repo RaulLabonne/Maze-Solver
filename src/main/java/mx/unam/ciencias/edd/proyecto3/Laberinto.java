@@ -41,6 +41,7 @@ public class Laberinto {
             color = Color.NEGRO;
         }
 
+        /* Establece el puntaje de la casilla */
         private void setPuntaje(){
             int r = (random.nextInt(15) + 1);
             puntaje = (byte) (r << 4);
@@ -72,9 +73,41 @@ public class Laberinto {
             return puerta;
         }
 
+        /**
+         * Regresa las coordenadas en un arreglo
+         * @return las coordenadas de la casilla
+         */
         public int[] getCoordenadas(){
             int[] coordenadas = {x,y};
             return coordenadas;
+        }
+
+        public Color getColor(){
+            return color;
+        }
+
+        public void setColor(Color color){
+            this.color = color;
+        }
+
+        public boolean esEntrada(){
+            return entrada;
+        }
+
+        public boolean esSalida(){
+            return salida;
+        }
+
+        public Casilla getAnterior(){
+            return anterior;
+        }
+
+        public void setAnterior(Casilla anterior){
+            this.anterior = anterior;
+        }
+
+        public void cierraPuerta(byte barrera){
+            puerta |= barrera;
         }
         /** 
          * Nos regresa en bytes la casilla
@@ -84,6 +117,12 @@ public class Laberinto {
             return (byte)(puntaje | puerta);
         }
 
+        /** 
+         * Nos dice si la casilla es igual al objeto recibido
+         * @param objeto el objeto a comparar.
+         * @return <code>true</code> si la casilla es igual al objeto recibido;
+         *      <code>false</code> en otro caso.
+         */
         @Override public boolean equals(Object objeto) {
             if (objeto == null || getClass() != objeto.getClass())
                 return false;
@@ -135,6 +174,10 @@ public class Laberinto {
             }
             tipo = TipoCasilla.CENTRO;
         }
+
+        @Override public String toString(){
+            return "casilla";
+        }
     }
 
     /* El laberinto */
@@ -179,9 +222,43 @@ public class Laberinto {
                 this.laberinto[i][j] = new Casilla(laberinto[b], j, i);
                 b++;
             }
-        buscaEntrada();
-        buscaSalida();
+        buscaEntradaYSalida();
         System.out.println("Entrada: " + entrada.x + ", " + entrada.y + "\tSalida: " + salida.x + ", " + salida.y);
+    }
+
+    /**
+     * Regresa la matriz de casillas
+     * @return la matriz de casillas.
+     */
+    public Casilla[][] getLaberinto(){
+        return laberinto;
+    }
+    /**
+     * Obtiene la casilla de coordenadas x,y.
+     * @param x la coordenada x de la casilla
+     * @param y la coordenada y de la casilla
+     * @return la casilla de coordenada x,y.
+     */
+    public Casilla getCasilla(int x, int y){
+        if (y < 0 || y >= laberinto.length || x < 0 || x >= laberinto[0].length)
+            return null;
+        return laberinto[y][x];
+    }
+
+    /**
+     * Regresa la entrada del laberinto
+     * @return  la entrada del laberinto.
+     */
+    public Casilla getEntrada(){
+        return entrada;
+    }
+
+    /**
+     * Regresa ;a salida del laberinto
+     * @return la salida del laberinto.
+     */
+    public Casilla getSalida(){
+        return salida;
     }
 
     /** 
@@ -190,7 +267,6 @@ public class Laberinto {
      */
     public void construyeLaberinto(){
         Pila<Casilla> pila = new Pila<>();
-        entrada.anterior = new Casilla(-1, -1);
         pila.mete(entrada);
         while (!pila.esVacia()){
             Casilla actual = pila.mira();
@@ -238,24 +314,6 @@ public class Laberinto {
         return casillas;
     }
 
-    /**
-     * Regresa la matriz de casillas
-     * @return la matriz de casillas.
-     */
-    public Casilla[][] getLaberinto(){
-        return laberinto;
-    }
-    /**
-     * Obtiene la casilla de coordenadas x,y.
-     * @param x la coordenada x de la casilla
-     * @param y la coordenada y de la casilla
-     * @return la casilla de coordenada x,y.
-     */
-    public Casilla getCasilla(int x, int y){
-        if (y < 0 || y >= laberinto.length || x < 0 || x >= laberinto[0].length)
-            return null;
-        return laberinto[y][x];
-    }
 
     /**
      * Abre la puerta de una casilla con su antesecor;
@@ -304,7 +362,7 @@ public class Laberinto {
             case LATERAL_NORTE: 
                 if(!casilla.entrada || !casilla.salida)
                     casilla.puerta |= 2;
-                break;
+                    break;
             case ESQUINA_DER_N:
                 if (casilla.entrada || casilla.salida){
                     casilla.puerta &= 12;
@@ -514,7 +572,7 @@ public class Laberinto {
         }
     }
 
-/*       @Override public String toString(){
+      @Override public String toString(){
         String s = "";
         for (int i = 0; i < laberinto.length; i++){
             for ( int j = 0; j < laberinto[i].length; j++)
@@ -527,69 +585,41 @@ public class Laberinto {
             s += "\n";
         }
         return s;
-    }  */
+    } 
     
     /**
-     * Metodo que busca a partir del valor de las puertas la entrada
+     * Metodo que busca a partir del valor de las puertas la entrada y la salida
      * del laberinto
-     * @return la entrada del laberinto.
      */
-    private void buscaEntrada(){
+    private void buscaEntradaYSalida(){
+        Lista<Casilla> huecos = new Lista<>();
         for (int i = 0; i < laberinto.length; i++){
             if ((laberinto[i][0].puerta & 11) == laberinto[i][0].puerta){
-                entrada = laberinto[i][0];
-                entrada.entrada = true;
-                return;
+                huecos.agrega(laberinto[i][0]);
             }
         }
-        System.out.println("Entrada no encontrada;");
+
         for (int i = 0; i < laberinto[0].length; i++)
             if ((laberinto[0][i].puerta & 13) == laberinto[0][i].puerta){
-                entrada = laberinto[0][i];
-                entrada.entrada = true;
-                return;
+                huecos.agrega(laberinto[0][i]);
             }
-        System.out.println("Entrada no encontrada;");
+
         for (int j = 0; j < laberinto.length; j++) 
             if ((laberinto[j][laberinto[0].length-1].puerta & 14) == laberinto[j][laberinto[0].length-1].puerta){
-                entrada = laberinto[j][laberinto[0].length-1];
-                entrada.entrada = true;
-                return;
+                huecos.agrega(laberinto[j][laberinto[0].length-1]);
             }
-        System.out.println("Entrada no encontrada;");
+
         for (int i = 0; i < laberinto[0].length; i++)
             if ((laberinto[laberinto.length-1][i].puerta & 7) == laberinto[laberinto.length-1][i].puerta){
-                entrada = laberinto[laberinto.length-1][i];
-                entrada.entrada = true;
-                return;
+                huecos.agrega(laberinto[laberinto.length-1][i]);
             }
-        System.out.println("Entrada no encontrada;");
+        if (huecos.getElementos() != 2){
+            System.err.println("Archivo invalido: El laberinto debe tener una entrada y una salida");
+            System.exit(1);
+        }
+        entrada = huecos.get(0);
+        entrada.entrada = true;
+        salida = huecos.get(1);
+        salida.salida = true;
     }
-
-    private void buscaSalida(){
-        for (int i = 0; i < laberinto.length; i++)
-            if ((laberinto[i][0].puerta & 11) == laberinto[i][0].puerta && !laberinto[i][0].entrada){
-                salida = laberinto[i][0];
-                salida.salida = true;
-                return;
-            }
-        for (int i = 0; i < laberinto[0].length; i++)
-            if ((laberinto[0][i].puerta & 13) == laberinto[0][i].puerta && !laberinto[0][i].entrada){
-                salida = laberinto[0][1];
-                salida.salida = true;
-                return;
-            }
-        for (int j = 0; j < laberinto.length; j++) 
-            if ((laberinto[j][laberinto[0].length-1].puerta & 14) == laberinto[j][laberinto[0].length-1].puerta && !laberinto[j][laberinto[0].length-1].entrada){
-                salida = laberinto[j][laberinto[0].length-1];
-                salida.salida = true;
-                return;
-            }
-        for (int i = 0; i < laberinto[0].length; i++)
-            if ((laberinto[laberinto.length-1][i].puerta & 7) == laberinto[laberinto.length-1][i].puerta && !laberinto[laberinto.length-1][i].entrada){
-                salida = laberinto[laberinto.length-1][i];
-                salida.salida = true;
-                return;
-            }
-    }
-}
+} 

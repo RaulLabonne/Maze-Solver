@@ -12,14 +12,15 @@ public class GenerarArchivo {
     /* El arreglo de bytes del laberinto */
     byte[] laberintoBytes;
 
+    /* Constructor de la clase */
     public GenerarArchivo(int w, int h, long seed){
         this.laberinto = new Laberinto(w, h, seed);
         this.laberinto.construyeLaberinto();
-        /* System.out.println(laberinto);  */
+        System.out.println(laberinto);
         laberintoBytes = laberinto.arregloCasillas((byte)(w & 0xFF), (byte)(h & 0xFF));
-        /* System.out.println(laberintoBytes.length); */
     }
 
+    /* Metodo auxiliar que guarda los bytes en la salida estandar */
     public void creaArchivo(){
         try{
             OutputStreamWriter out = new OutputStreamWriter(System.out, "ISO-8859-1");
