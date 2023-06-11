@@ -149,6 +149,14 @@ public class Laberinto {
             this.anterior = anterior;
         }
 
+        /**
+         * Regresa el tipo de casilla
+         * @return el tipo de casilla
+         */
+        public TipoCasilla getTipoCasilla(){
+            return tipo;
+        }
+
         /** 
          * Nos regresa en bytes la casilla
          * @return la casiilla en bytes.
@@ -214,10 +222,6 @@ public class Laberinto {
             }
             tipo = TipoCasilla.CENTRO;
         }
-
-        @Override public String toString(){
-            return String.format("(%s,%s)", x, y);
-        }
     }
 
     /* El laberinto */
@@ -260,6 +264,7 @@ public class Laberinto {
         for (int i = 0; i < this.laberinto.length ; i++)
             for (int j = 0; j < this.laberinto[i].length; j++){
                 this.laberinto[i][j] = new Casilla(laberinto[b], j, i);
+                this.laberinto[i][j].setTipoCasilla(j, i);
                 b++;
             }
         buscaEntradaYSalida();
@@ -622,21 +627,6 @@ public class Laberinto {
             salidaAleatoria();
         }
     }
-
-/*       @Override public String toString(){
-        String s = "";
-        for (int i = 0; i < laberinto.length; i++){
-            for ( int j = 0; j < laberinto[i].length; j++)
-                s += String.format("| %s |", laberinto[i][j].tipo);
-            s += "\n";
-        }
-        for (int i = 0; i < laberinto.length; i++){
-            for ( int j = 0; j < laberinto[i].length; j++)
-                s += String.format("|Entrada:%s, Salida:%s, Byte:%s|", laberinto[i][j].entrada,laberinto[i][j].salida,laberinto[i][j].puerta);
-            s += "\n";
-        }
-        return s;
-    }  */
     
     /**
      * Metodo que busca a partir del valor de las puertas la entrada y la salida

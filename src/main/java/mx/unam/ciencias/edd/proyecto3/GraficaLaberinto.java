@@ -6,15 +6,21 @@ import mx.unam.ciencias.edd.Color;
 import mx.unam.ciencias.edd.Lista;
 import mx.unam.ciencias.edd.VerticeGrafica;
 
+/** 
+ * Clase que asocia una grafica al laberinto dado.
+ */
 public class GraficaLaberinto {
     
-
+    /* El laberinto en casillas */
     Casilla[][] casillas;
+    /* El laberinto */
     Laberinto laberinto;
+    /* La grafica asociada al laberinto */
     Grafica<Casilla> lGrafica;
-    Lista<VerticeGrafica<Casilla>> trajectoriaPMinimo;
+    /* Lista de casillas que forman la solucion al laberinto */
     Lista<Casilla> dijkstra;
 
+    /* Constructor de la clase */
     public GraficaLaberinto(Laberinto laberinto){
         this.laberinto = laberinto;
         casillas = laberinto.getLaberinto();
@@ -24,7 +30,7 @@ public class GraficaLaberinto {
             for (int j = 0; j < this.casillas[i].length; j++)
                 lGrafica.agrega(laberinto.getCasilla(j, i));
         conectaCasillas();
-        trajectoriaPMinimo = lGrafica.dijkstra(laberinto.getEntrada(), laberinto.getSalida());
+        Lista<VerticeGrafica<Casilla>> trajectoriaPMinimo = lGrafica.dijkstra(laberinto.getEntrada(), laberinto.getSalida());
         for (VerticeGrafica<Casilla> casilla : trajectoriaPMinimo) {
             dijkstra.agrega(casilla.get());
         }
@@ -34,14 +40,25 @@ public class GraficaLaberinto {
         }
     }
 
+    /**
+     * Regresa la trayectoria que resuelve el laberinto
+     * @return la trayectoria que resuelve el laberinto
+     */
     public Lista<Casilla> getTrayectoria(){
         return dijkstra;
     }
 
+    /**
+     * Regresa el laberinto en forma de grafica
+     * @return  el laberinto en forma de grafica.
+     */
     public Grafica<Casilla> getGrafica(){
         return lGrafica;
     }
 
+    /** 
+     * Conecta las casillas dependiendo de su puerta
+     */
     public void conectaCasillas(){
         Pila<Casilla> pila = new Pila<>();
         Casilla entrada = laberinto.getEntrada();
@@ -66,6 +83,11 @@ public class GraficaLaberinto {
         } 
     }
 
+    /**
+     * Dada una casilla, obtiene todos sus vecinos de acuerdo a la puerta que tenga abierta
+     * @param casilla la casilla a obtener los vecinos
+     * @return todos los vecinos de la casilla.
+     */
     private Lista<Casilla> vecinos(Casilla casilla){
         Lista<Casilla> vecinos = new Lista<>();
         int[] coor = casilla.getCoordenadas();
@@ -86,6 +108,12 @@ public class GraficaLaberinto {
         return vecinos;
     }
 
+    /**
+     * Metodo auxiliar que cierra las puertas de la entrada y de la salida con
+     * el fin de no generar errores
+     * @param casilla la casilla a cerrar la puerta.
+     * @return la casilla con la puerta tapada.
+     */
     private Casilla ignoraPuerta(Casilla casilla){
         if (casilla.esEntrada() || casilla.esSalida()){
             Casilla conPuerta = casilla;
@@ -103,6 +131,12 @@ public class GraficaLaberinto {
         return casilla;
     }
 
+    /**
+     * Genera una arista con la casilla actual y su anterior.
+     * Checa si ambas casillas son consistentes y forma la arista, en caso
+     * contrario termina el programa.
+     * @param actual la casilla a conectar con su anterior.
+     */
     private void nuevaArista(Casilla actual){
         Casilla anterior = actual.getAnterior();
         int[] coor = actual.getCoordenadas(), bcoor = anterior.getCoordenadas();
@@ -124,6 +158,7 @@ public class GraficaLaberinto {
         }
     }
 
+    /* Metodo para cerrar el programa */
     private void uso(int[] coor, int [] bcoor){
         String s = String.format("Archivo invalido: Las casillas de coordenadas (%s,%s) y (%s,%s) no son consecutivas", coor[0], coor[1], bcoor[0], bcoor[1]);
         System.err.println(s);

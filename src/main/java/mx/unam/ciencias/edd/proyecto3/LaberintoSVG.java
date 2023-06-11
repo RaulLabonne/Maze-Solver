@@ -3,14 +3,23 @@ package mx.unam.ciencias.edd.proyecto3;
 import mx.unam.ciencias.edd.Lista;
 import mx.unam.ciencias.edd.proyecto3.Laberinto.Casilla;
 
+/** 
+ * Clase que genera un svg que represente al laberinto
+ */
 public class LaberintoSVG {
     
+    /* La lista de casillas del laberinto */
     Lista<Casilla> laberinto;
+    /* La lista de casillas que forman la solucion */
     Lista<Casilla> solucion;
+    /* Las coordenadas de la entradab y de la salida */
     int[] entrada, salida;
+    /* La altura */
     int h;
+    /* El ancho */
     int w;
 
+    /* Constructor de la calse */
     public LaberintoSVG(Lista<Casilla> laberinto, Lista<Casilla> solucion, int[] dimensiones, int[] entrada, int[] salida){
         this.laberinto = laberinto;
         this.solucion = solucion;
@@ -20,6 +29,10 @@ public class LaberintoSVG {
         this.salida = salida;
     }
 
+    /**
+     * Regresa, en una cadena, el codigo svg del laberinto.
+     * @return el codigo svg que grafica el laberinto.
+     */
     public String svg(){
         String svg = "";
         svg += inicio();
@@ -38,22 +51,34 @@ public class LaberintoSVG {
         return svg;
     }
 
+    /**
+     * Regresa el codigo svg de una casilla del laberinto
+     * @param casilla la casilla a graficar
+     * @return  el codigo svg de una casilla del laberinto
+     */
     private String casilla(Casilla casilla){
         String puertas = "";
         int constante = 40;
         int coorX = 20 + (constante*casilla.getCoordenadas()[0]);
         int coorY = 20 + (constante*casilla.getCoordenadas()[1]);
-        if ((casilla.getPuerta() | 1) == casilla.getPuerta())
-            puertas += linea(coorX+constante, coorY, coorX+constante, coorY+constante);
+        if (casilla.getTipoCasilla() == TipoCasilla.ESQUINA_DER_N || casilla.getTipoCasilla() == TipoCasilla.LATERAL_ESTE || casilla.getTipoCasilla() == TipoCasilla.ESQUINA_DER_SUR)
+            if ((casilla.getPuerta() | 1) == casilla.getPuerta())
+                puertas += linea(coorX+constante, coorY, coorX+constante, coorY+constante);
         if ((casilla.getPuerta() | 2) == casilla.getPuerta())
             puertas += linea(coorX, coorY, coorX+constante, coorY);
         if ((casilla.getPuerta() | 4) == casilla.getPuerta())
             puertas += linea(coorX, coorY, coorX, coorY+constante);
-        if ((casilla.getPuerta() | 8) == casilla.getPuerta())
-            puertas += linea(coorX, coorY+constante, coorX+constante, coorY+constante);
+        if (casilla.getTipoCasilla() == TipoCasilla.ESQUINA_DER_SUR || casilla.getTipoCasilla() == TipoCasilla.LATERAL_SUR || casilla.getTipoCasilla() == TipoCasilla.ESQUINA_IZQ_SUR)
+            if ((casilla.getPuerta() | 8) == casilla.getPuerta())
+                puertas += linea(coorX, coorY+constante, coorX+constante, coorY+constante);
         return puertas;
     }
 
+    /**
+     * Regresa el codigo svg de la solucion al laberinto
+     * @param casilla la casilla que froma parte de la soolucion
+     * @return la solucion del laberinto en svg
+     */
     private String solucion(Casilla casilla){
         String solucion = "";
         int constante = 40;
@@ -64,16 +89,6 @@ public class LaberintoSVG {
         int coorXB = 40 + (constante*casilla.getAnterior().getCoordenadas()[0]);
         int coorYB = 40 + (constante*casilla.getAnterior().getCoordenadas()[1]);
         solucion += lineaSolucion(coorX, coorY, coorXB, coorYB);
-        
-        
-/*         if ((casilla.getPuerta() & 14) == casilla.getPuerta())
-            solucion += lineaSolucion(coorX, coorY, coorX+constante, coorY);
-        if ((casilla.getPuerta() & 13) == casilla.getPuerta())
-            solucion += lineaSolucion(coorX, coorY, coorX, coorY+constante);
-        if ((casilla.getPuerta() & 11 ) == casilla.getPuerta())
-            solucion += lineaSolucion(coorX, coorY, coorX-constante, coorY);
-        if ((casilla.getPuerta() & 7) == casilla.getPuerta())
-            solucion += lineaSolucion(coorX, coorY, coorX, coorY-constante); */
         return solucion;
     }
 
