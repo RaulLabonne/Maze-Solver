@@ -68,8 +68,8 @@ public class Proyecto3 {
             usoNumeros();
         }
 
-        if (columnas < 2 || renglones < 2){
-            System.err.println("El minimo de columnas y de renglones que puede tener un laberinto es de 2");
+        if (columnas < 2 || renglones < 2  || columnas > 255 || renglones > 255){
+            System.err.println("El minimo de columnas y de renglones que puede tener un laberinto es de 2 y maximo 255");
             System.exit(1);
         }
 

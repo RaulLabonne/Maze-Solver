@@ -208,7 +208,7 @@ public class Laberinto {
                 tipo = TipoCasilla.LATERAL_OESTE;
                 return;
             }
-            else if (x == laberinto[x].length - 1){
+            else if (x == laberinto[y].length - 1){
                 tipo = TipoCasilla.LATERAL_ESTE;
                 return;
             }

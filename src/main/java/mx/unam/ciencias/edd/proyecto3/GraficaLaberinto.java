@@ -28,6 +28,10 @@ public class GraficaLaberinto {
         for (VerticeGrafica<Casilla> casilla : trajectoriaPMinimo) {
             dijkstra.agrega(casilla.get());
         }
+        if (dijkstra.esVacia()){
+            System.err.println("Archivo invalido: Laberinto sin solucion.");
+            System.exit(1);
+        }
     }
 
     public Lista<Casilla> getTrayectoria(){
@@ -59,7 +63,7 @@ public class GraficaLaberinto {
                 }
             } else
                 pila.saca();
-        }
+        } 
     }
 
     private Lista<Casilla> vecinos(Casilla casilla){
