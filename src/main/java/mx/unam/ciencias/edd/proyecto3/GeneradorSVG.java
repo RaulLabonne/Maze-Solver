@@ -17,7 +17,7 @@ public class GeneradorSVG {
     Lista<Casilla> solucion;
 
     /* Constructor de la clase */
-    public GeneradorSVG(byte[] archivo){
+    public GeneradorSVG(Lista<Integer> archivo){
         laberinto = new Laberinto(archivo);
         GraficaLaberinto grafica = new GraficaLaberinto(laberinto);
         graficaL = grafica.getGrafica();

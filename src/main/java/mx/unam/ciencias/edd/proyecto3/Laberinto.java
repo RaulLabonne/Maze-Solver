@@ -48,7 +48,7 @@ public class Laberinto {
         }
 
         /* Constructor de la clase con un byte */
-        public Casilla(byte casilla, int x, int y){
+        public Casilla(int casilla, int x, int y){
             puntaje = (byte)(casilla & -16);
             puerta = (byte)(casilla & 0x0F);
             this.x = x;
@@ -258,12 +258,12 @@ public class Laberinto {
      * Construye un laberinto a partir de un arreglo de bytes
      * @param laberinto el arreglo de bytes de un archivo
      */
-    public Laberinto(byte[] laberinto){
-        this.laberinto = new Casilla[laberinto[4]&0xFF][laberinto[5]&0xFF];
+    public Laberinto(Lista<Integer> laberinto){
+        this.laberinto = new Casilla[laberinto.get(4)&0xFF][laberinto.get(5)&0xFF];
         int b = 6;
         for (int i = 0; i < this.laberinto.length ; i++)
             for (int j = 0; j < this.laberinto[i].length; j++){
-                this.laberinto[i][j] = new Casilla(laberinto[b], j, i);
+                this.laberinto[i][j] = new Casilla(laberinto.get(b), j, i);
                 this.laberinto[i][j].setTipoCasilla(j, i);
                 b++;
             }

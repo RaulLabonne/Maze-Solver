@@ -1,5 +1,5 @@
 package mx.unam.ciencias.edd.proyecto3;
-import java.io.OutputStreamWriter;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 
 /** 
@@ -22,7 +22,7 @@ public class GenerarArchivo {
     /* Metodo auxiliar que guarda los bytes en la salida estandar */
     public void creaArchivo(){
         try{
-            OutputStreamWriter out = new OutputStreamWriter(System.out, "ISO-8859-1");
+            BufferedOutputStream out = new BufferedOutputStream(System.out);
             for (int i = 0; i < laberintoBytes.length; i++){
                 out.write(laberintoBytes[i] & 0xFF);
             }

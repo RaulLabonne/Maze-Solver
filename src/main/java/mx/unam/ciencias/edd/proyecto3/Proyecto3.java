@@ -1,7 +1,6 @@
 package mx.unam.ciencias.edd.proyecto3;
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import mx.unam.ciencias.edd.Lista;
 
 /** 
@@ -57,7 +56,7 @@ public class Proyecto3 {
             usoBandera();
         if(w == null || h == null)
             uso();
-        long semilla = System.nanoTime();
+        long semilla = System.currentTimeMillis();
         int columnas = 0, renglones = 0;
         try{
             if (s != null)
@@ -81,7 +80,7 @@ public class Proyecto3 {
     private static void leerArchivo(){
         Lista<Integer> numeros = new Lista<>();
         try{
-            InputStreamReader out = new InputStreamReader(System.in, "ISO-8859-1");
+            BufferedInputStream out = new BufferedInputStream(System.in);
             int n;
             while ((n = out.read()) != -1){
                 numeros.agrega(n);
@@ -91,12 +90,7 @@ public class Proyecto3 {
             System.err.println("Ocurrio un error durante la lectura del archivo");
             System.exit(1);
         }
-        byte[] archivo = new byte[numeros.getElementos()];
-        int c = 0;
-        for (int n : numeros){
-            archivo[c++] = (byte)(n);
-        }
-        GeneradorSVG svg = new GeneradorSVG(archivo);
+        GeneradorSVG svg = new GeneradorSVG(numeros);
         svg.ejecuta();
     }
 }
